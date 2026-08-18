@@ -1,75 +1,111 @@
-# React + TypeScript + Vite
+# AI Chat Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack AI chat application built with React, TypeScript, Vite, Node.js/Express, MongoDB, and Google's Gemini API. Supports real-time streaming responses, web-grounded citations, response regeneration, and persistent conversation history.
 
-Currently, two official plugins are available:
+**Repository:** https://github.com/Nivo203/ai-chat
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
 
-## React Compiler
+| Layer | Technologies |
+|---|---|
+| Frontend | React, TypeScript, Vite, Tailwind CSS |
+| Backend | Node.js, Express, TypeScript, Server-Sent Events (SSE) |
+| Database | MongoDB |
+| AI | Google Gemini API (Gemini 3.5 Flash Lite) with Google Search grounding |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Prerequisites
 
-## Expanding the ESLint configuration
+- [Node.js](https://nodejs.org/) v18 or later
+- [MongoDB](https://www.mongodb.com/try/download/community) running locally (Windows) — default connection assumed at `mongodb://localhost:27017`
+- A [Google Gemini API key](https://ai.google.dev/)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Setup (under 5 minutes)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 1. Clone the repository
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+git clone https://github.com/Nivo203/ai-chat.git
+cd ai-chat
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Backend setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+cd backend
+npm install
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Create a `.env` file inside `backend/`:
+
+```env
+PORT=3001
+MONGODB_URI=mongodb://localhost:27017/ai-chat
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+Start the backend:
+
+```bash
+npm run dev
+```
+
+Confirm it's running by visiting:
 
 ```
+http://localhost:3001/health
+```
+
+### 3. Frontend setup
+
+Open a new terminal:
+
+```bash
+cd ai-chat
+npm install
+npm run dev
+```
+
+The app will be available at:
+
+```
+http://localhost:5173
+```
+
+### 4. Make sure MongoDB is running
+
+On Windows, make sure the MongoDB service is running before starting the backend (`services.msc` → MongoDB, or run `mongod` from a terminal).
+
+## Verifying the Setup
+
+1. Open `http://localhost:5173` in your browser.
+2. Send a message in the chat.
+3. Watch the response stream in with citations.
+4. Try regenerating a response and switching versions.
+5. Give feedback with the thumbs up/down control.
+6. Refresh the page and confirm your conversation reloads from the thread list.
+
+## Project Structure
+
+```
+ai-chat/
+├── ai/          # Custom AI skill/agent instructions
+├── backend/     # Express + TypeScript API, Gemini integration, MongoDB models
+├── public/      # Static assets
+├── src/         # React + TypeScript frontend
+└── README.md
+```
+
+## Environment Variables
+
+| Variable | Where | Description |
+|---|---|---|
+| `PORT` | backend | Port the Express server runs on (default 3001) |
+| `MONGODB_URI` | backend | MongoDB connection string |
+| `GEMINI_API_KEY` | backend | API key for Google's Gemini API |
+
+`backend/.env` is excluded from version control via `.gitignore` — never commit real API keys.
+
+## Notes
+
+- If the AI stops generating responses, check the backend logs for a `429 RESOURCE_EXHAUSTED` error — this indicates the Gemini API quota has been reached and is unrelated to the application code.
+- The custom AI skill/agent instructions used during development are checked into the `ai/` directory.
